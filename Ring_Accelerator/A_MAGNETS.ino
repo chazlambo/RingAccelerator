@@ -5,10 +5,10 @@ const int M3 = 6;
 const int M4 = 7;
 
 // Status LED Pins
-const int LED1 = 32;
-const int LED2 = 30;
-const int LED3 = 36;
-const int LED4 = 34;
+const int LED1 = 36;
+const int LED2 = 34;
+const int LED3 = 40;
+const int LED4 = 38;
 
 void magSetup() {
   // Initialize Magnet Pins

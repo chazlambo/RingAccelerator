@@ -5,17 +5,17 @@ const int IR3 = A2;
 const int IR4 = A3;
 
 // Button Pins
-const int BUT1 = 44;
-const int BUT2 = 38;
-const int BUT3 = 40;
-const int BUT4 = 42;
+const int BUT1 = 48;
+const int BUT2 = 42;
+const int BUT3 = 44;
+const int BUT4 = 46;
 
 // Sensor Calibration Values
-int sensCal1 = 313;
-int sensCal2 = 268;
+int sensCal1 = 309;
+int sensCal2 = 266;
 int sensCal3 = 288;
-int sensCal4 = 192;
-int tolerance = 10;
+int sensCal4 = 190;
+int tolerance = 50;
 
 // Sensor Value Variables
 int sensVal1 = 0;

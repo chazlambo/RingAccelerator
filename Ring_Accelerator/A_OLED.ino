@@ -60,12 +60,12 @@ void drawSense() {
   display.display();
 }
 
-void drawDelayed(int val) {
+void drawDelayed(float val) {
   display.clearDisplay();
   display.drawBitmap(0, 0, bmp_verticalarrows, 128, 64, 1);
   display.setTextSize(3);
   display.setTextColor(SSD1306_WHITE);
-  display.setCursor(40,20);
+  display.setCursor(20,20);
   display.print(val);
   display.display();
 }

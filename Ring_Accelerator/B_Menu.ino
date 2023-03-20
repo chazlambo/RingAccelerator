@@ -5,10 +5,10 @@ unsigned long t_butt_menu = 0;
 unsigned long t_butt_buff = 0;
 
 // Time Intervals
-unsigned long menuInterval = 10;
-unsigned long blinkDelay = 800;
-unsigned long buttonDelay = 10;
-unsigned long buttonBuffer = 200;
+unsigned long menuInterval = 10000;
+unsigned long blinkDelay = 800000;
+unsigned long buttonDelay = 10000;
+unsigned long buttonBuffer = 200000;
 
 // Navigation Variables
 int menuVal = 0;
@@ -33,21 +33,21 @@ bool blinkState = 0;
 
 void menu() {
   while(menuState) {
-  t_mil = millis(); // Update Time
+  t_mic = micros(); // Update Time
 
   // Read button inputs
-  if (t_mil - t_butt_menu > buttonDelay) {    
-    t_butt_menu = t_mil;  // Update t_old
-    if (t_mil - t_butt_buff > buttonBuffer) { // Integrate button buffer
+  if (t_mic - t_butt_menu > buttonDelay) {    
+    t_butt_menu = t_mic;  // Update t_old
+    if (t_mic - t_butt_buff > buttonBuffer) { // Integrate button buffer
       
       if (!digitalRead(BUT2)) {               // Read left button
         menuVal = menuVal - 2;                // Go back a screen
-        t_butt_buff = t_mil;
+        t_butt_buff = t_mic;
       }
       
       if (!digitalRead(BUT4)) {               // Read right button
         menuVal = menuVal + 2;                // Go forward a screen
-        t_butt_buff = t_mil;
+        t_butt_buff = t_mic;
       }
       
       if (!digitalRead(BUT3)) {               // Read bottom button
@@ -60,8 +60,8 @@ void menu() {
   }
 
   // Arrow Blinking Timer
-  if (t_mil - t_blink > blinkDelay) {
-    t_blink = t_mil;
+  if (t_mic - t_blink > blinkDelay) {
+    t_blink = t_mic;
     blinkState = !blinkState; // Toggle blink
 
     // Assign blink value to add later
@@ -74,8 +74,8 @@ void menu() {
   }
 
   // Menu Update
-  if (t_mil - t_menu > menuInterval) {
-    t_menu = t_mil;
+  if (t_mic - t_menu > menuInterval) {
+    t_menu = t_mic;
     if (menuVal < 0) {  // Loop to end
       menuVal = 8;
     }

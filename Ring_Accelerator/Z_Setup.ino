@@ -10,4 +10,6 @@ void setupFun() {
   
   // Run the OLED Setup Function
   oledSetup();
+
+  reset();
 }
