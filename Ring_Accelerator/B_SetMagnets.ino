@@ -1,39 +1,22 @@
-void setM1(bool state) {
-  if(state) {
-    digitalWrite(LED1, HIGH);
-    digitalWrite(M1, HIGH);
-    return;
-  }
-  digitalWrite(LED1, LOW);
-  digitalWrite(M1, LOW);
-}
+// B_SetMagnets
+// Function for turning individual magnets on or off
 
-void setM2(bool state) {
-  if(state) {
-    digitalWrite(LED2, HIGH);
-    digitalWrite(M2, HIGH);
-    return;
-  }
-  digitalWrite(LED2, LOW);
-  digitalWrite(M2, LOW);
-}
+void setMagnets(int states[4]) { // Sets the state of Magnet 1
 
-void setM3(bool state) {
-  if(state) {
-    digitalWrite(LED3, HIGH);
-    digitalWrite(M3, HIGH);
-    return;
-  }
-  digitalWrite(LED3, LOW);
-  digitalWrite(M3, LOW);
-}
+  // Initialize variable to count how many magnets are on
+  int stateCount = 0;
 
-void setM4(bool state) {
-  if(state) {
-    digitalWrite(LED4, HIGH);
-    digitalWrite(M4, HIGH);
-    return;
+  for (int i = 0; i < 4; i++) {         // Iterate through each magnet
+
+    if (states[i] && stateCount < 2) {  // If state is HIGH and less than 2 magnets are turned on
+      digitalWrite(LEDPINS[i], HIGH); // Turn on the indicator LED
+      digitalWrite(MAGPINS[i], HIGH); // Turn on the magnet
+      stateCount++;                   // Add to state count
+      // Note: This gives magnets 1 and 2 priority over magnets 3 and 4.
+    }
+    else {                              // If state is LOW
+      digitalWrite(LEDPINS[i], LOW);  // Turn off indicator LED
+      digitalWrite(MAGPINS[i], LOW);  // Turn off magnet
+    }
   }
-  digitalWrite(LED4, LOW);
-  digitalWrite(M4, LOW);
 }

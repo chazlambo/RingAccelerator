@@ -1,57 +1,20 @@
-// Time Variables
-unsigned long t1_sense = 0;
-unsigned long t2_sense = 0;
-unsigned long t3_sense = 0;
-unsigned long t4_sense = 0;
-unsigned long sense_int = 100;
+// Sense Mode:
+// Triggers magnets whenever light break sensors are triggereds
 
 void sense() {
-    // IR Sensor 1
-    if (t_mic - t1_sense >= sense_int) {  
-    t1_sense = t_mic;
-    sensVal1 = analogRead(IR1);
-    if (detect(sensVal1, sensCal1)) {
-      m1State = 1;
+
+  for (int i = 0; i < 4; i++) {                         // For each IR Sensor
+    sensVals[i] = analogRead(IRPINS[i]);                // Read the value of the pin
+    if (abs(sensVals[i] - sensCals[i]) > tolerance) { // If value is outside of tolerance from calibrated value
+      magnetStates[i] = 1;                              // Set magnet state to LOW
     }
-    else {
-      m1State = 0;
+    else {                                              // If value is inside tolerance from calibrated value
+      magnetStates[i] = 0;                              // Set magnet state to LOW
     }
   }
 
-  // IR Sensor 2
-  if (t_mic - t2_sense >= sense_int) {
-    t2_sense = t_mic;
-    sensVal2 = analogRead(IR2);
-    if (detect(sensVal2, sensCal2)) {
-      m2State = 1;
-    }
-    else {
-      m2State = 0;
-    }
+  if (!screenDrawn) { // If the screen hasn't already been drawn
+    drawSense();      // Draws the sense menu
+    screenDrawn = 1;  // Set the screen drawn boolean to true
   }
-
-  // IR Sensor 3
-  if (t_mic - t3_sense >= sense_int) {
-    t3_sense = t_mic;
-    sensVal3 = analogRead(IR3);
-    if (detect(sensVal3, sensCal3)) {
-      m3State = 1;
-    }
-    else {
-      m3State = 0;
-    }
-  }
-
-  // IR Sensor 4
-  if (t_mic - t4_sense >= sense_int) {
-    t4_sense = t_mic;
-    sensVal4 = analogRead(IR4);
-    if (detect(sensVal4, sensCal4)) {
-      m4State = 1;
-    }
-    else {
-      m4State = 0;
-    }
-  }
-  drawSense();
 }

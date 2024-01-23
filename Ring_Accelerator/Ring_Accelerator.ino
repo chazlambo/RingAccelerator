@@ -1,128 +1,99 @@
-// Time Variables
-unsigned long t_mic;
-unsigned long t_run;
-unsigned long t_reset;
-unsigned long t_stallout;
-unsigned long t1_stall;
-unsigned long t2_stall;
-unsigned long t3_stall;
-unsigned long t4_stall;
+// Ring Accelerator Main
+// Program made by Charlie Lambert
+// Last Revision: 1/22/2024
+// Revision Notes:
+//    -Added more comments to make code very clear
+//    -Removed unnecessary timing function from sense and delay functions
+//    -Removed magnet states serial prints
+//    -Implement logic to stop redrawing mode menus every loop
+//    -Removed reduntant conversion from blinkState bool to blinkVal
+//    -Combined individual magnet states and variables into single array and function
+//    -Combined magnet stallout variables and code into single array and if statement
+//    -Moved magnet state count into B_SetMagnets and modified for simpler implementation
+//    -Replaced instances of repeated code with for loops and arrays
+//    -Removed unnecessary time interval if statments for main functions
+//    -Converted back to milliseconds
 
+// To do:
+//    -Add Trigger function which will trigger the magnet for a user defined period of time immediately when light break is broken
+//    -Add Calibrate function that will display current calibrated values, current readings, and can set new calibrated values to be saved for later
+//        - Use EEPROM?
+//    -Add Game function where defaults sense mode but magnets will only turn on if correct button is pressed
+
+// Notes:
+//    -Files are named with alphabetical prefixes for arduino compiler
+//    -Arduino compiles everything A-Zwith the main file being compiled first
+
+// Time Variables
+unsigned long t_mil;      // Current time in milliseconds
+unsigned long t_reset;    // Last reset check time in milliseconds
+unsigned long t_stallout; // Variable for tracking full system timeout
+unsigned long t_stall[4]; // Variable for tracking magnets timeout
 
 // Interval Variables
-unsigned long run_int = 300;            // microseconds
-unsigned long reset_int = 10000;        // microseconds
-unsigned long t_magnet_stall = 500000;  // microseconds
-unsigned long runout_int = 300000000;   // microseconds
+unsigned long reset_int = 100;              // Time in milliseconds between instances of checking if all buttons are pressed for reset
+unsigned long t_magnet_stall = 1000;        // Time in milliseconds that a magnet can be on before it stalls out
+unsigned long runout_int_add = 600000;      // Time in milliseconds until program times out and resets
+unsigned long runout_int = runout_int_add;  // Variable to track new reset interval
 
 // Program State Variables
 int modeState = 0;
+bool screenDrawn = 0;
 
 // Magnet State Variables
-bool m1State = LOW;
-bool m2State = LOW;
-bool m3State = LOW;
-bool m4State = LOW;
-int stateCount = 0;
+int magnetStates[4];
 
 void setup() {
   setupFun();
 }
 
 void loop() {
-  menu();
 
-  // Update Time
-  t_mic = micros();
+  menu(); // Runs menuing function to get modeState for main program.
 
-  if (t_mic - t_run > run_int) {
-    
-    // Get magnet states based on selected mode
-    switch (modeState) {
-      case 1:
-        manual();
-        break;
-      case 2:
-        sense();
-        break;
-      case 3:
-        delayed();
-        break;
-      case 4:
-        break;
-      default:
-        break;
-    }
-    // Update Time
-    t_mic = micros();
-    
-    if(!m1State) {
-      t1_stall = t_mic;
-    }
-    if(!m2State) {
-      t2_stall = t_mic;
-    }
-    if(!m3State) {
-      t3_stall = t_mic;
-    }
-    if(!m4State) {
-      t4_stall = t_mic;
-    }
+  // Update Time Variable
+  t_mil = millis();
 
-    if (t_mic - t1_stall > t_magnet_stall) {
-      m1State = 0;
-    }
-    if (t_mic - t2_stall > t_magnet_stall) {
-      m2State = 0;
-    }
-    if (t_mic - t3_stall > t_magnet_stall) {
-      m3State = 0;
-    }
-    if (t_mic - t4_stall > t_magnet_stall) {
-      m4State = 0;
-    }
-
-    // Count States to make sure more than 3 don't turn on
-    stateCount = 0;
-    if(m1State) {
-      stateCount += 1;
-    }
-    if(m2State) {
-      stateCount += 1;
-    }
-    if(m3State) {
-      stateCount += 1;
-      if (stateCount > 2) {
-        m3State = 0;
-      }
-    }
-    if(m4State) {
-      stateCount += 1;
-      if (stateCount > 2) {
-        m4State = 0;
-      }
-    }
-
-    
-    // Set magnet and indicator states
-    setM1(m1State);
-    setM2(m2State);
-    setM3(m3State);
-    setM4(m4State);
-    Serial.print(m1State);
-    Serial.print("\t");
-    Serial.print(m2State);
-    Serial.print("\t");
-    Serial.print(m3State);
-    Serial.print("\t");
-    Serial.println(m4State);
+  // Get magnet states based on selected mode
+  switch (modeState) {  // modeState set by menu() function
+    case 1:
+      manual();
+      break;
+    case 2:
+      sense();
+      break;
+    case 3:
+      delayed();
+      break;
+    case 4:
+      break;
+    default:
+      break;
   }
 
-  if (t_mic - t_reset > reset_int) {  // Reset when all 4 buttons are pressed
+  // Update Time Variable
+  t_mil = millis();
+
+
+
+  // Implement individual magnet stall out
+  for (int i = 0; i < 4; i++) {                 // Iterate through each magnet
+    if (!magnetStates[i]) {                     // If a magnet is off
+      t_stall[i] = t_mil;                       // Update stall start time
+    }
+    if (t_mil - t_stall[i] > t_magnet_stall) {  // If the magnet has been on longer than t_magnet_stall
+      magnetStates[i] = 0;                      // Turn off that magnet
+    }
+  }
+
+  // Set magnet and indicator states
+  setMagnets(magnetStates);
+
+  if (t_mil - t_reset > reset_int) {  // Reset to menu if all 4 buttons are pressed
     resetCheck();
   }
 
-  if (modeState != 0 && t_mic - t_stallout > runout_int) {  // Resets after 5 minutes of use for safety
+  if (modeState != 0 && t_mil - t_stallout > runout_int) {  // Resets back to start after certain amount of time has passed
     reset();
   }
 }
