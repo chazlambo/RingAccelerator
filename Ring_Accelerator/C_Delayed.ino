@@ -1,9 +1,9 @@
-// Delayed ModeL
+// Delayed Mode
 // Turns on magnets whenever light break sensors are triggered and delays turning magnet off by a user set delay
 
 // Time Variables
 unsigned long t_butt_delayed = 0;
-unsigned long butt_delayed_int = 50;
+unsigned long butt_delayed_int = 100;
 
 // Delay buffer time variables
 unsigned long t_del_buffer[4];
@@ -18,7 +18,6 @@ unsigned long delayedMin = 0;
 unsigned long delayedMax = 500;
 
 void delayed() {
-  Serial.println(delayedBuffer);
   // Read buttons to update delay amount
 
   if (t_mil - t_butt_delayed > buttonDelay) { // User interface for changing delay

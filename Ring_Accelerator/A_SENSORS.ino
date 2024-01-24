@@ -15,13 +15,7 @@ const int BUT3 = 44;
 const int BUT4 = 46;
 const int BUTPINS[] = {BUT1, BUT2, BUT3, BUT4};
 
-// Sensor Calibration Values
-int sensCal1 = 309;
-int sensCal2 = 266;
-int sensCal3 = 288;
-int sensCal4 = 190;
-int sensCals[] = {sensCal1, sensCal2, sensCal3, sensCal4};
-int tolerance = 50;
+
 
 // Sensor Value Variables
 int sensVals[4];

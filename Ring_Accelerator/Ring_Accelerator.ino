@@ -1,24 +1,19 @@
 // Ring Accelerator Main
 // Program made by Charlie Lambert
-// Last Revision: 1/22/2024
+// Last Revision: 1/24/2024
 // Revision Notes:
-//    -Added more comments to make code very clear
-//    -Removed unnecessary timing function from sense and delay functions
-//    -Removed magnet states serial prints
-//    -Implement logic to stop redrawing mode menus every loop
-//    -Removed reduntant conversion from blinkState bool to blinkVal
-//    -Combined individual magnet states and variables into single array and function
-//    -Combined magnet stallout variables and code into single array and if statement
-//    -Moved magnet state count into B_SetMagnets and modified for simpler implementation
-//    -Replaced instances of repeated code with for loops and arrays
-//    -Removed unnecessary time interval if statments for main functions
-//    -Converted back to milliseconds
+//    -Added Game Function
+//    -Added Trigger Function
+//    -Add Recalibrate function that will 
+//        -Display current calibrated values
+//        -Display current readings
+//        -Set new calibrated values to be saved for later
+//    -Created new BMP's for menus
+//    -Reordered Menu: Select -> Game -> Sense -> Delay -> Trigger -> Manual -> Recalibrate
+//    -Updated menu with new modes
 
 // To do:
-//    -Add Trigger function which will trigger the magnet for a user defined period of time immediately when light break is broken
-//    -Add Calibrate function that will display current calibrated values, current readings, and can set new calibrated values to be saved for later
-//        - Use EEPROM?
-//    -Add Game function where defaults sense mode but magnets will only turn on if correct button is pressed
+//    -(Optional) Add wire for reset pin. (Probably won't do this and will just power cycle if needed)
 
 // Notes:
 //    -Files are named with alphabetical prefixes for arduino compiler
@@ -43,6 +38,9 @@ bool screenDrawn = 0;
 // Magnet State Variables
 int magnetStates[4];
 
+// Game Score Variable
+int gameScore = 0;
+
 void setup() {
   setupFun();
 }
@@ -57,7 +55,7 @@ void loop() {
   // Get magnet states based on selected mode
   switch (modeState) {  // modeState set by menu() function
     case 1:
-      manual();
+      game();
       break;
     case 2:
       sense();
@@ -66,6 +64,14 @@ void loop() {
       delayed();
       break;
     case 4:
+      trigger();
+      break;
+    case 5:
+      manual();
+      break;
+    case 6:
+      recalibrate();
+      return;
       break;
     default:
       break;
@@ -73,7 +79,6 @@ void loop() {
 
   // Update Time Variable
   t_mil = millis();
-
 
 
   // Implement individual magnet stall out

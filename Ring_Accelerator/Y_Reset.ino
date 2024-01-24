@@ -3,11 +3,10 @@
 
 void resetCheck() {
   // Check if all 4 buttons were pressed
-  if (digitalRead(BUT1) || digitalRead(BUT2) || digitalRead(BUT3) || digitalRead(BUT4)) {
-    return;
+  if (digitalRead(BUT1) || digitalRead(BUT2) || digitalRead(BUT3) || digitalRead(BUT4)) { // If any of the buttons aren't pressed
+    return;                                                                               // Don't reset
   }
   else {
-    Serial.println("RESET");
     reset();
   }
 }
@@ -34,6 +33,13 @@ void reset() {// Reset all program variables and return to main menu
 
   // Update Stallout Interval
   runout_int += runout_int_add;
+
+  // Reset Game Score
+  gameScore = 0;
+
+  // Reset Buffer Variables
+  delayedBuffer = 50;
+  triggerBuffer = 50;
 
   // To do: Add physical connection from reset to pin for full hardware reset
 }

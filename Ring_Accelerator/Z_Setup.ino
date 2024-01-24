@@ -11,6 +11,9 @@ void setupFun() {
   // Run the OLED Setup Function
   oledSetup();
 
+  // Retrieve Calibrated Values
+  calibrateSetup();
+
   // Call reset function
   reset();
 }

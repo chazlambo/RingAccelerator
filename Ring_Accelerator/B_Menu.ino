@@ -23,14 +23,18 @@ bool blinkState = 0;
 /******* Menu BMP Array Values *******
     0 - Select Mode
     1 - Select Mode (Arrows)
-    2 - Manual
-    3 - Manual (Arrows)
+    2 - Game
+    3 - Game (Arrows)
     4 - Sense
     5 - Sense (Arrows)
     6 - Delay
     7 - Delay (Arrows)
-    8 - Tuned
-    9 - Tuned (Arrows)
+    8 - Trigger
+    9 - Trigger (Arrows)
+    10 - Manual
+    11 - Manual (Arrows)
+    12 - Recalibrate
+    13 - Recalibrate (Arrows)
 */
 
 void menu() {
@@ -52,10 +56,10 @@ void menu() {
           t_butt_buff = t_mil;
         }
 
-        if (!digitalRead(BUT3)) {               // Read bottom button
-          if (menuVal > 1 && menuVal < 10) {    // If on a selectable mode
-            modeState = menuVal / 2;            // Set the global modeState
-            menuState = 0;                      // End while loop in loop() function and start main function
+        if (!digitalRead(BUT3)) {                              // Read bottom button
+          if (menuVal > 1 && menuVal < bmp_menuArray_LEN) {    // If on a selectable mode
+            modeState = menuVal / 2;                           // Set the global modeState
+            menuState = 0;                                     // End while loop in loop() function and start main function
           }
         }
       }
@@ -71,10 +75,10 @@ void menu() {
     if (t_mil - t_menu > menuInterval) {  // If menuInterval microseconds have elapsed
       t_menu = t_mil;                     // Update last checked variable
       if (menuVal < 0) {                  // If going before first state
-        menuVal = 8;                      // Loop to last state
+        menuVal = bmp_menuArray_LEN-2;    // Loop to last state
       }
-      if (menuVal > 8) {                  // If going past last state
-        menuVal = 0;                      // Loop to first state
+      if (menuVal > bmp_menuArray_LEN-2) {  // If going past last state
+        menuVal = 0;                        // Loop to first state
       }
 
       // Display menu BMP according to value and blink status
